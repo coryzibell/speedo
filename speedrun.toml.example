@@ -1,0 +1,23 @@
+# Example configuration file for speedrun
+# 
+# Config file search order (first found is used):
+# 1. ./speedrun.toml (current directory)
+# 2. ./.speedrun.toml (current directory, hidden)
+# 3. ~/.speedrun.toml (home directory)
+
+# User agent string for HTTP requests
+user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
+
+# Default to interactive mode (show menu) when no flags are specified
+# Set to false for non-interactive mode (just run default server test)
+interactive = false
+
+# Custom test servers (optional)
+# Add your own speed test servers here
+[[custom_servers]]
+name = "My Custom Server"
+url = "https://example.com/testfile.bin"
+
+[[custom_servers]]
+name = "Another Server"
+url = "https://another-example.com/100MB.bin"

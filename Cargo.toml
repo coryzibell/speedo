@@ -1,0 +1,24 @@
+[package]
+name = "speedrun"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reqwest = { version = "0.11", default-features = false, features = ["stream", "rustls-tls"] }
+tokio = { version = "1", features = ["full"] }
+colored = "2.1"
+indicatif = "0.17"
+futures-util = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+dirs = "5.0"
+inquire = "0.9.1"
+figlet-rs = "0.1.5"
+rand = "0.9.2"
+zstd = "0.13"
+anyhow = "1.0.99"
+colorgrad = { version = "0.8.0", features = ["preset"] }
+clap = { version = "4.5", features = ["derive"] }
+
+[build-dependencies]
+zstd = "0.13"
