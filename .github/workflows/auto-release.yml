@@ -73,4 +73,3 @@ jobs:
           git checkout release || git checkout -b release
           git reset --hard origin/main
           git push -f origin release
-
