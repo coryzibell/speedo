@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - release
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -138,8 +137,13 @@ jobs:
           # Get version from Cargo.toml
           VERSION="v$(grep '^version' Cargo.toml | head -1 | cut -d'"' -f2)"
           
-          # Delete existing release and tag if they exist
-          gh release delete "$VERSION" -y 2>/dev/null || true
+          # Check if release already exists
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists, skipping"
+            exit 0
+          fi
+          
+          # Delete tag if it exists without a release
           git push origin :refs/tags/"$VERSION" 2>/dev/null || true
           
           # Create new tag

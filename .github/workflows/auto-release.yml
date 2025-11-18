@@ -4,20 +4,65 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'Cargo.toml'
 
 permissions:
   contents: write
 
 jobs:
-  trigger-release:
-    name: Trigger Release
+  bump-version:
+    name: Bump Version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump patch version
+        run: |
+          # Check if Cargo.toml was changed in the last commit
+          if git diff HEAD~1 HEAD --name-only | grep -q "^Cargo.toml$"; then
+            echo "Cargo.toml was manually updated, skipping auto-bump"
+            echo "SKIP_BUMP=true" >> $GITHUB_ENV
+            exit 0
+          fi
+          
+          # Extract current version
+          CURRENT_VERSION=$(grep '^version = ' Cargo.toml | head -1 | cut -d'"' -f2)
+          
+          # Split version into major.minor.patch
+          MAJOR=$(echo $CURRENT_VERSION | cut -d'.' -f1)
+          MINOR=$(echo $CURRENT_VERSION | cut -d'.' -f2)
+          PATCH=$(echo $CURRENT_VERSION | cut -d'.' -f3)
+          
+          # Increment patch
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+          
+          # Update Cargo.toml
+          sed -i "s/^version = \"$CURRENT_VERSION\"/version = \"$NEW_VERSION\"/" Cargo.toml
+          
+          echo "Bumped version from $CURRENT_VERSION to $NEW_VERSION"
+          echo "SKIP_BUMP=false" >> $GITHUB_ENV
+
+      - name: Commit and push version bump
+        if: env.SKIP_BUMP != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Cargo.toml
+          git commit -m "Bump version to $(grep '^version = ' Cargo.toml | head -1 | cut -d'\"' -f2)"
+          git push origin main
+
+  trigger-release:
+    name: Trigger Release
+    needs: bump-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
 
       - name: Force update release branch
         run: |
@@ -27,3 +72,4 @@ jobs:
           git checkout release || git checkout -b release
           git reset --hard origin/main
           git push -f origin release
+
