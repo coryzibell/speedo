@@ -2,8 +2,9 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - release
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -82,9 +83,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Get version from Cargo.toml
+          VERSION="v$(grep '^version' Cargo.toml | head -1 | cut -d'"' -f2)"
+          
+          # Delete existing release and tag if they exist
+          gh release delete "$VERSION" -y 2>/dev/null || true
+          git push origin :refs/tags/"$VERSION" 2>/dev/null || true
+          
+          # Create new tag
+          git tag "$VERSION"
+          git push origin "$VERSION"
+          
           # Create release
-          gh release create ${{ github.ref_name }} \
-            --title "Release ${{ github.ref_name }}" \
+          gh release create "$VERSION" \
+            --title "Release $VERSION" \
             --generate-notes
           
           # Upload all binaries
@@ -93,6 +105,6 @@ jobs:
             file=$(find "$dir" -type f | head -n 1)
             if [ -f "$file" ]; then
               chmod +x "$file" 2>/dev/null || true
-              gh release upload ${{ github.ref_name }} "$file#${artifact_name}"
+              gh release upload "$VERSION" "$file#${artifact_name}"
             fi
           done
