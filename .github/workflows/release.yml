@@ -56,31 +56,31 @@ jobs:
         if: matrix.target == 'aarch64-unknown-linux-gnu' || matrix.target == 'x86_64-unknown-freebsd'
         run: cargo install cross --git https://github.com/cross-rs/cross
 
-      - name: Build x86_64-unknown-linux-gnu
+      - name: Build x86 Linux
         if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Build aarch64-unknown-linux-gnu
+      - name: Build ARM Linux
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: cross build --release --target ${{ matrix.target }}
 
-      - name: Build x86_64-unknown-freebsd
+      - name: Build x86 FreeBSD
         if: matrix.target == 'x86_64-unknown-freebsd'
         run: cross build --release --target ${{ matrix.target }}
 
-      - name: Build x86_64-pc-windows-msvc
+      - name: Build x86 Windows
         if: matrix.target == 'x86_64-pc-windows-msvc'
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Build aarch64-pc-windows-msvc
+      - name: Build ARM Windows
         if: matrix.target == 'aarch64-pc-windows-msvc'
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Build x86_64-apple-darwin
+      - name: Build x86 macOS
         if: matrix.target == 'x86_64-apple-darwin'
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Build aarch64-apple-darwin
+      - name: Build ARM macOS
         if: matrix.target == 'aarch64-apple-darwin'
         run: cargo build --release --target ${{ matrix.target }}
 
