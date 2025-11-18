@@ -5,8 +5,6 @@ mod config;
 mod downloader;
 mod servers;
 mod ui;
-mod fonts;
-mod title;
 
 use clap::Parser;
 use config::load_config;

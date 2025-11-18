@@ -31,7 +31,7 @@ pub fn wait_for_continue() -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn show_menu() -> Result<ServerSelection, Box<dyn std::error::Error>> {
     print!("\x1B[2J\x1B[1;1H");
-    crate::title::print_title();
+    playbill::print_title("speedo", Some(env!("CARGO_PKG_VERSION")));
 
     let options = vec![
         "Cloudflare CDN - https://speed.cloudflare.com/__down?bytes=100000000",
