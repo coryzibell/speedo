@@ -1,10 +1,11 @@
 # speedrun
 
-Network speed test tool.
+Network speed test tool and file downloader.
 
 ## SYNOPSIS
 
 ```
+speedrun [URL]
 speedrun [-i|--interactive] [-n|--non-interactive]
 speedrun --help
 speedrun --version
@@ -13,6 +14,8 @@ speedrun --version
 ## DESCRIPTION
 
 speedrun downloads a test file and reports the transfer speed. By default it runs non-interactively against Cloudflare's CDN. With the -i flag, it displays a menu for selecting different test servers.
+
+If a URL is provided as an argument, the file is downloaded to the current directory and the speed is reported.
 
 Command-line flags override the config file setting.
 
@@ -29,6 +32,11 @@ Command-line flags override the config file setting.
 
 **-V, --version**
     Display version
+
+## ARGUMENTS
+
+**URL**
+    URL to download (saves file to current directory)
 
 ## CONFIGURATION
 
@@ -54,11 +62,39 @@ url = "https://example.com/testfile.bin"
 
 See speedrun.toml.example for details.
 
+## EXAMPLES
+
+Run a quick speed test (default server):
+```
+speedrun
+```
+
+Download a specific file:
+```
+speedrun https://example.com/testfile.zip
+```
+
+Show interactive menu:
+```
+speedrun -i
+```
+
+Force non-interactive mode (override config):
+```
+speedrun -n
+```
+
 ## OUTPUT
 
 Non-interactive mode prints only the speed:
 ```
 44.60 MB/s  (374.14 Mbps)
+```
+
+When downloading a URL, the saved filename is also printed:
+```
+44.60 MB/s  (374.14 Mbps)
+Saved: testfile.zip
 ```
 
 Interactive mode displays:

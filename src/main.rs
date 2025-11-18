@@ -14,6 +14,10 @@ use ui::{show_menu, print_results, print_speed_only, print_download_header, wait
 #[derive(Parser)]
 #[command(version, about = "A fast network speed test tool", long_about = None)]
 struct Args {
+    /// URL to download (saves file to current directory)
+    #[arg(value_name = "URL")]
+    url: Option<String>,
+    
     /// Run in interactive mode (show menu)
     #[arg(short, long)]
     interactive: bool,
@@ -27,6 +31,24 @@ struct Args {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let config = load_config();
+    
+    // If URL is provided, download it and save to current directory
+    if let Some(url) = args.url {
+        let filename = downloader::extract_filename(&url);
+        let result = download_file(&url, Some(&filename), &config.user_agent).await?;
+        
+        ui::print_speed_only(
+            result.status_code,
+            result.total_time,
+            result.bytes_downloaded,
+        );
+        
+        if result.status_code == 200 {
+            println!("Saved: {}", filename);
+        }
+        
+        return Ok(());
+    }
     
     // Determine mode: CLI flags override config
     let interactive_mode = if args.non_interactive {
