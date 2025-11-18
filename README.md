@@ -19,7 +19,7 @@ cargo binstall speedo
 ### From source
 
 ```bash
-cargo install --git https://github.com/kautau/speedo
+cargo install --git https://github.com/coryzibell/speedo
 ```
 
 ## SYNOPSIS
