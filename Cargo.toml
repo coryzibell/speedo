@@ -8,6 +8,17 @@ repository = "https://github.com/kautau/speedo"
 keywords = ["network", "speed-test", "download", "benchmark", "cli"]
 categories = ["command-line-utilities", "network-programming"]
 
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }.{ archive-format }"
+bin-dir = "{ bin }{ binary-ext }"
+pkg-fmt = "tgz"
+
+[package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
+pkg-fmt = "zip"
+
+[package.metadata.binstall.overrides.aarch64-pc-windows-msvc]
+pkg-fmt = "zip"
+
 [dependencies]
 reqwest = { version = "0.11", default-features = false, features = ["stream", "rustls-tls"] }
 tokio = { version = "1", features = ["full"] }

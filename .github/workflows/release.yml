@@ -17,32 +17,32 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            artifact_name: speedrun
-            asset_name: speedrun-linux-x86_64
+            artifact_name: speedo
+            asset_name: speedo-linux-x86_64
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
-            artifact_name: speedrun
-            asset_name: speedrun-linux-aarch64
+            artifact_name: speedo
+            asset_name: speedo-linux-aarch64
           - os: ubuntu-latest
             target: x86_64-unknown-freebsd
-            artifact_name: speedrun
-            asset_name: speedrun-freebsd-x86_64
+            artifact_name: speedo
+            asset_name: speedo-freebsd-x86_64
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            artifact_name: speedrun.exe
-            asset_name: speedrun-windows-x86_64.exe
+            artifact_name: speedo.exe
+            asset_name: speedo-windows-x86_64.exe
           - os: windows-latest
             target: aarch64-pc-windows-msvc
-            artifact_name: speedrun.exe
-            asset_name: speedrun-windows-aarch64.exe
+            artifact_name: speedo.exe
+            asset_name: speedo-windows-aarch64.exe
           - os: macos-latest
             target: x86_64-apple-darwin
-            artifact_name: speedrun
-            asset_name: speedrun-macos-x86_64
+            artifact_name: speedo
+            asset_name: speedo-macos-x86_64
           - os: macos-latest
             target: aarch64-apple-darwin
-            artifact_name: speedrun
-            asset_name: speedrun-macos-aarch64
+            artifact_name: speedo
+            asset_name: speedo-macos-aarch64
 
     steps:
       - uses: actions/checkout@v4
@@ -95,41 +95,52 @@ jobs:
         run: |
           cd target/${{ matrix.target }}/release
           tar -czf ${{ matrix.asset_name }}.tar.gz ${{ matrix.artifact_name }}
+          tar -czf speedo-${{ matrix.target }}.tar.gz ${{ matrix.artifact_name }}
           mv ${{ matrix.asset_name }}.tar.gz ../../..
+          mv speedo-${{ matrix.target }}.tar.gz ../../..
 
       - name: Package binary (Windows)
         if: contains(matrix.target, 'windows')
         shell: pwsh
         run: |
           Compress-Archive -Path target/${{ matrix.target }}/release/${{ matrix.artifact_name }} -DestinationPath ${{ matrix.asset_name }}.zip
+          Compress-Archive -Path target/${{ matrix.target }}/release/${{ matrix.artifact_name }} -DestinationPath speedo-${{ matrix.target }}.zip
 
       - name: Package binary (macOS)
         if: contains(matrix.target, 'apple')
         run: |
           cd target/${{ matrix.target }}/release
           tar -czf ${{ matrix.asset_name }}.tar.gz ${{ matrix.artifact_name }}
+          tar -czf speedo-${{ matrix.target }}.tar.gz ${{ matrix.artifact_name }}
           mv ${{ matrix.asset_name }}.tar.gz ../../..
+          mv speedo-${{ matrix.target }}.tar.gz ../../..
 
       - name: Upload packaged artifact (Linux/FreeBSD)
         if: contains(matrix.target, 'linux') || contains(matrix.target, 'freebsd')
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}-packaged
-          path: ${{ matrix.asset_name }}.tar.gz
+          path: |
+            ${{ matrix.asset_name }}.tar.gz
+            speedo-${{ matrix.target }}.tar.gz
 
       - name: Upload packaged artifact (Windows)
         if: contains(matrix.target, 'windows')
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}-packaged
-          path: ${{ matrix.asset_name }}.zip
+          path: |
+            ${{ matrix.asset_name }}.zip
+            speedo-${{ matrix.target }}.zip
 
       - name: Upload packaged artifact (macOS)
         if: contains(matrix.target, 'apple')
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}-packaged
-          path: ${{ matrix.asset_name }}.tar.gz
+          path: |
+            ${{ matrix.asset_name }}.tar.gz
+            speedo-${{ matrix.target }}.tar.gz
 
   release:
     name: Create Release

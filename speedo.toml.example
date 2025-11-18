@@ -1,9 +1,9 @@
-# Example configuration file for speedrun
+# Example configuration file for speedo
 # 
 # Config file search order (first found is used):
-# 1. ./speedrun.toml (current directory)
-# 2. ./.speedrun.toml (current directory, hidden)
-# 3. ~/.speedrun.toml (home directory)
+# 1. ./speedo.toml (current directory)
+# 2. ./.speedo.toml (current directory, hidden)
+# 3. ~/.speedo.toml (home directory)
 
 # User agent string for HTTP requests
 user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"

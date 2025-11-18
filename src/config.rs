@@ -1,5 +1,5 @@
 // Configuration file loading and management.
-// Handles reading TOML config from ./speedrun.toml, ./.speedrun.toml, or ~/.speedrun.toml.
+// Handles reading TOML config from ./speedo.toml, ./.speedo.toml, or ~/.speedo.toml.
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -38,12 +38,12 @@ fn get_config_paths() -> Vec<PathBuf> {
     let mut paths = Vec::new();
     
     if let Ok(cwd) = std::env::current_dir() {
-        paths.push(cwd.join("speedrun.toml"));
-        paths.push(cwd.join(".speedrun.toml"));
+        paths.push(cwd.join("speedo.toml"));
+        paths.push(cwd.join(".speedo.toml"));
     }
     
     if let Some(home_dir) = dirs::home_dir() {
-        paths.push(home_dir.join(".speedrun.toml"));
+        paths.push(home_dir.join(".speedo.toml"));
     }
     
     paths

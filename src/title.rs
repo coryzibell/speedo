@@ -11,9 +11,9 @@ pub fn print_title() {
         let font_str = String::from_utf8_lossy(&decompressed);
         match FIGfont::from_content(&font_str) {
             Ok(font) => {
-                if let Some(figure) = font.convert("speedrun") {
+                if let Some(figure) = font.convert("speedo") {
                     print_gradient_text(&figure.to_string());
-                    println!("speedrun v{}\n", env!("CARGO_PKG_VERSION"));
+                    println!("speedo v{}\n", env!("CARGO_PKG_VERSION"));
                     return;
                 }
             }
@@ -23,9 +23,9 @@ pub fn print_title() {
     
     // Fallback to standard font if something goes wrong
     if let Ok(standard_font) = FIGfont::standard() {
-        if let Some(figure) = standard_font.convert("speedrun") {
+        if let Some(figure) = standard_font.convert("speedo") {
             print_gradient_text(&figure.to_string());
-            println!("speedrun v{}\n", env!("CARGO_PKG_VERSION"));
+            println!("speedo v{}\n", env!("CARGO_PKG_VERSION"));
         }
     }
 }

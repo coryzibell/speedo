@@ -1,19 +1,39 @@
-# speedrun
+# speedo
 
 Network speed test tool and file downloader. Built in rust, doesn't need curl, wget, or system ssl libs.
+
+## Installation
+
+### From crates.io
+
+```bash
+cargo install speedo
+```
+
+### Using cargo-binstall
+
+```bash
+cargo binstall speedo
+```
+
+### From source
+
+```bash
+cargo install --git https://github.com/kautau/speedo
+```
 
 ## SYNOPSIS
 
 ```
-speedrun [URL]
-speedrun [-i|--interactive] [-n|--non-interactive]
-speedrun --help
-speedrun --version
+speedo [URL]
+speedo [-i|--interactive] [-n|--non-interactive]
+speedo --help
+speedo --version
 ```
 
 ## DESCRIPTION
 
-speedrun downloads a test file and reports the transfer speed. By default it runs non-interactively against Cloudflare's CDN. With the -i flag, it displays a menu for selecting different test servers.
+speedo downloads a test file and reports the transfer speed. By default it runs non-interactively against Cloudflare's CDN. With the -i flag, it displays a menu for selecting different test servers.
 
 If a URL is provided as an argument, the file is downloaded to the current directory and the speed is reported.
 
@@ -41,9 +61,9 @@ Command-line flags override the config file setting.
 ## CONFIGURATION
 
 Configuration is read from the first file found:
-- ./speedrun.toml
-- ./.speedrun.toml
-- ~/.speedrun.toml
+- ./speedo.toml
+- ./.speedo.toml
+- ~/.speedo.toml
 
 ### Example Configuration
 
@@ -60,28 +80,28 @@ name = "My Server"
 url = "https://example.com/testfile.bin"
 ```
 
-See speedrun.toml.example for details.
+See speedo.toml.example for details.
 
 ## EXAMPLES
 
 Run a quick speed test (default server):
 ```
-speedrun
+speedo
 ```
 
 Download a specific file:
 ```
-speedrun https://example.com/testfile.zip
+speedo https://example.com/testfile.zip
 ```
 
 Show interactive menu:
 ```
-speedrun -i
+speedo -i
 ```
 
 Force non-interactive mode (override config):
 ```
-speedrun -n
+speedo -n
 ```
 
 ## OUTPUT
@@ -121,8 +141,8 @@ cargo build --release
 
 ## FILES
 
-- speedrun.toml - configuration file
-- ~/.speedrun.toml - user configuration file
+- speedo.toml - configuration file
+- ~/.speedo.toml - user configuration file
 
 ## SEE ALSO
 

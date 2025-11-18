@@ -5,8 +5,8 @@ Cargo.lock
 *.pdb
 
 # Application-specific config files (user settings)
-speedrun.toml
-.speedrun.toml
+speedo.toml
+.speedo.toml
 
 # Downloaded test files
 *.bin
