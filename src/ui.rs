@@ -23,6 +23,48 @@ pub enum ServerSelection {
     Quit,
 }
 
+pub enum ServerOption {
+    Server(ServerMetadata, String), // server and display string with health info
+    Back,
+}
+
+impl std::fmt::Display for ServerOption {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ServerOption::Server(_, display) => write!(f, "{}", display),
+            ServerOption::Back => write!(f, "← Back"),
+        }
+    }
+}
+
+pub enum RegionOption {
+    Region(String, usize), // region name and server count
+    Back,
+}
+
+impl std::fmt::Display for RegionOption {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RegionOption::Region(name, count) => write!(f, "{} ({} servers)", name, count),
+            RegionOption::Back => write!(f, "← Back"),
+        }
+    }
+}
+
+pub enum ProviderOption {
+    Provider(String, String), // provider name and display info
+    Back,
+}
+
+impl std::fmt::Display for ProviderOption {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ProviderOption::Provider(_, display) => write!(f, "{}", display),
+            ProviderOption::Back => write!(f, "← Back"),
+        }
+    }
+}
+
 pub enum MenuOption {
     GlobalServer(ServerMetadata),
     BrowseAll(usize), // carries server count
@@ -139,7 +181,7 @@ fn group_servers_by_provider(servers: &[ServerMetadata]) -> HashMap<String, Vec<
 }
 
 fn select_from_list(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
-    let mut display_names: Vec<String> = servers.iter().map(|s| {
+    let mut options: Vec<ServerOption> = servers.iter().map(|s| {
         let health = health_data.health.get(&s.url);
         let speed_info = if let Some(h) = health {
             if h.avg_speed_mbps > 0.0 {
@@ -151,90 +193,92 @@ fn select_from_list(servers: &[ServerMetadata], health_data: &LocalServerData) -
             String::new()
         };
         
-        format!("{} - {}{}", 
+        let display = format!("{} - {}{}", 
             s.name,
             s.location.as_ref().unwrap_or(&"Unknown".to_string()),
             speed_info
-        )
+        );
+        
+        ServerOption::Server(s.clone(), display)
     }).collect();
     
-    display_names.push("← Back".to_string());
+    options.push(ServerOption::Back);
     
-    let selection = Select::new("Select a server:", display_names)
+    let selection = Select::new("Select a server:", options)
         .with_page_size(20)
         .prompt()?;
     
-    if selection == "← Back" {
-        return show_menu();
+    match selection {
+        ServerOption::Server(server, _) => Ok(ServerSelection::Server(server)),
+        ServerOption::Back => show_menu(),
     }
-    
-    // Find the server by matching the beginning of the display name
-    let idx = servers.iter().position(|s| {
-        selection.starts_with(&format!("{} - {}", s.name, s.location.as_ref().unwrap_or(&"Unknown".to_string())))
-    }).unwrap_or(0);
-    
-    Ok(ServerSelection::Server(servers[idx].clone()))
 }
 
 fn browse_by_region(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
     let grouped = group_servers_by_region(servers);
     
-    let mut regions: Vec<String> = grouped.keys()
-        .map(|r| {
-            let count = grouped.get(r).map(|v| v.len()).unwrap_or(0);
-            format!("{} ({} servers)", r, count)
-        })
+    let mut options: Vec<RegionOption> = grouped.iter()
+        .map(|(region, servers)| RegionOption::Region(region.clone(), servers.len()))
         .collect();
-    regions.sort();
-    regions.push("← Back".to_string());
+    options.sort_by(|a, b| {
+        match (a, b) {
+            (RegionOption::Region(name_a, _), RegionOption::Region(name_b, _)) => name_a.cmp(name_b),
+            _ => std::cmp::Ordering::Equal,
+        }
+    });
+    options.push(RegionOption::Back);
     
-    let selection = Select::new("Select a region:", regions)
+    let selection = Select::new("Select a region:", options)
         .prompt()?;
     
-    if selection == "← Back" {
-        return show_menu();
+    match selection {
+        RegionOption::Region(region, _) => {
+            let region_servers = grouped.get(&region).unwrap();
+            select_from_list(region_servers, health_data)
+        }
+        RegionOption::Back => show_menu(),
     }
-    
-    let region = selection.split(" (").next().unwrap_or("").to_string();
-    let region_servers = grouped.get(&region).unwrap();
-    
-    select_from_list(region_servers, health_data)
 }
 
 fn browse_by_provider(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
     let grouped = group_servers_by_provider(servers);
     
-    let mut providers: Vec<String> = grouped.keys()
-        .map(|p| {
-            let count = grouped.get(p).map(|v| v.len()).unwrap_or(0);
-            let regions: HashSet<String> = grouped.get(p).unwrap()
-                .iter()
+    let mut options: Vec<ProviderOption> = grouped.iter()
+        .map(|(provider, servers)| {
+            let count = servers.len();
+            let regions: HashSet<String> = servers.iter()
                 .filter_map(|s| s.region.clone())
                 .collect();
             
-            if regions.is_empty() {
-                format!("{} ({} servers)", p, count)
+            let display = if regions.is_empty() {
+                format!("{} ({} servers)", provider, count)
             } else if regions.len() == 1 {
-                format!("{} ({} servers - {})", p, count, regions.iter().next().unwrap())
+                format!("{} ({} servers - {})", provider, count, regions.iter().next().unwrap())
             } else {
-                format!("{} ({} servers - {} regions)", p, count, regions.len())
-            }
+                format!("{} ({} servers - {} regions)", provider, count, regions.len())
+            };
+            
+            ProviderOption::Provider(provider.clone(), display)
         })
         .collect();
-    providers.sort();
-    providers.push("← Back".to_string());
+    options.sort_by(|a, b| {
+        match (a, b) {
+            (ProviderOption::Provider(name_a, _), ProviderOption::Provider(name_b, _)) => name_a.cmp(name_b),
+            _ => std::cmp::Ordering::Equal,
+        }
+    });
+    options.push(ProviderOption::Back);
     
-    let selection = Select::new("Select a provider:", providers)
+    let selection = Select::new("Select a provider:", options)
         .prompt()?;
     
-    if selection == "← Back" {
-        return show_menu();
+    match selection {
+        ProviderOption::Provider(provider, _) => {
+            let provider_servers = grouped.get(&provider).unwrap();
+            select_from_list(provider_servers, health_data)
+        }
+        ProviderOption::Back => show_menu(),
     }
-    
-    let provider = selection.split(" (").next().unwrap_or("").to_string();
-    let provider_servers = grouped.get(&provider).unwrap();
-    
-    select_from_list(provider_servers, health_data)
 }
 
 fn browse_all(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
