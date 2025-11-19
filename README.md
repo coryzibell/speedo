@@ -250,9 +250,10 @@ speedo includes 37+ pre-configured speed test servers across all major regions, 
 - Vultr: Singapore, Bangalore
 - Linode: Singapore
 
-**Oceania (2 servers):**
+**Oceania (3 servers):**
 - Vultr: Sydney
 - Linode: Sydney
+- OVH: Australia
 
 ### Interactive Browse Modes
 

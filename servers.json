@@ -1,6 +1,6 @@
 {
-  "version": "2.1.0",
-  "updated": "2025-11-19T05:50:00Z",
+  "version": "2.2.0",
+  "updated": "2025-11-19T05:55:00Z",
   "servers": [
     {
       "name": "Cloudflare CDN",
@@ -389,6 +389,17 @@
       "region": "North America",
       "lat": 38.9072,
       "lon": -77.0369,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "OVH Australia",
+      "url": "https://proof.ovh.au/files/100Mb.dat",
+      "provider": "OVH",
+      "location": "Sydney, Australia",
+      "region": "Oceania",
+      "lat": -33.8688,
+      "lon": 151.2093,
       "file_size": 104857600,
       "enabled": true
     }
