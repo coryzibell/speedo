@@ -27,13 +27,17 @@ cargo install --git https://github.com/coryzibell/speedo
 ```
 speedo [URL]
 speedo [-i|--interactive] [-n|--non-interactive] [-s|--speed-unit UNIT]
+speedo [--json] [--format FORMAT] [--compact]
+speedo --update-servers
 speedo --help
 speedo --version
 ```
 
 ## DESCRIPTION
 
-speedo downloads a test file and reports the transfer speed. By default it runs non-interactively against Cloudflare's CDN. With the -i flag, it displays a menu for selecting different test servers.
+speedo downloads a test file and reports the transfer speed. By default it runs non-interactively against Cloudflare's CDN. With the -i flag, it displays an enhanced interactive menu with 34+ speed test servers organized by region and provider.
+
+The tool supports multiple output formats (human-readable, JSON, CSV) for scripting and automation, and automatically updates its server list from GitHub.
 
 If a URL is provided as an argument, the file is downloaded to the current directory and the speed is reported.
 
@@ -42,13 +46,25 @@ Command-line flags override the config file settings.
 ## OPTIONS
 
 **-i, --interactive**
-    Show server selection menu
+    Show enhanced server selection menu with browse modes (by region, provider, search)
 
 **-n, --non-interactive**
     Run quick test (override config)
 
 **-s, --speed-unit UNIT**
     Speed unit format (bits-metric, bits-binary, bytes-metric, bytes-binary)
+
+**--format FORMAT**
+    Output format: json, csv, or human (default)
+
+**--json**
+    Output JSON format (shorthand for --format json)
+
+**--compact**
+    Use compact JSON output (no pretty printing)
+
+**--update-servers**
+    Update remote server list from GitHub
 
 **-h, --help**
     Display help text
@@ -105,9 +121,14 @@ Download a specific file:
 speedo https://example.com/testfile.zip
 ```
 
-Show interactive menu:
+Show interactive menu with enhanced browse modes:
 ```
 speedo -i
+```
+
+Update server list from GitHub:
+```
+speedo --update-servers
 ```
 
 Force non-interactive mode (override config):
@@ -123,6 +144,17 @@ speedo --speed-unit bits-metric
 Download with custom speed unit:
 ```
 speedo -s bits-binary https://example.com/file.bin
+```
+
+Output results as JSON:
+```
+speedo --json
+speedo -n --json --compact | jq '.results.speed.mbps'
+```
+
+Output results as CSV (for logging):
+```
+speedo -n --format csv >> speed_tests.csv
 ```
 
 ## OUTPUT
@@ -147,6 +179,44 @@ Interactive mode displays a progress bar during download, then shows:
 - File size
 - Transfer speed
 
+### JSON Output
+
+```bash
+speedo --json
+```
+
+```json
+{
+  "timestamp": "2025-11-19T05:00:00Z",
+  "server": {
+    "name": "Cloudflare CDN",
+    "url": "https://speed.cloudflare.com/__down?bytes=100000000"
+  },
+  "results": {
+    "status_code": 200,
+    "bytes_downloaded": 100000000,
+    "total_time": 4.532,
+    "connect_time": 0.123,
+    "ttfb": 0.245,
+    "speed": {
+      "mbps": 176.42,
+      "mb_s": 22.05
+    }
+  }
+}
+```
+
+### CSV Output
+
+```bash
+speedo --format csv
+```
+
+```
+timestamp,server_name,server_url,bytes_downloaded,total_time,connect_time,ttfb,speed_mbps,status_code
+2025-11-19T05:00:00Z,Cloudflare CDN,https://speed.cloudflare.com/__down?bytes=100000000,100000000,4.532,0.123,0.245,176.42,200
+```
+
 ### Speed Unit Configuration
 
 You can configure the speed display format in speedo.toml:
@@ -157,11 +227,45 @@ You can configure the speed display format in speedo.toml:
 
 ## SERVERS
 
-Pre-configured test servers:
-- Cloudflare (CDN) - default
+speedo includes 34+ pre-configured speed test servers across all major regions, automatically updated from GitHub:
+
+**Global/CDN:**
+- Cloudflare (Global CDN) - default
 - Tele2 (Global)
-- Hetzner (Nuremberg, Falkenstein, Helsinki, Ashburn, Hillsboro, Singapore)
-- Vultr (New Jersey, Silicon Valley, Singapore)
+
+**North America (15 servers):**
+- Hetzner: Ashburn VA, Hillsboro OR
+- Vultr: New Jersey, Atlanta, Chicago, Dallas, Seattle, Silicon Valley, Los Angeles
+- Linode: Newark, Atlanta, Dallas, Fremont
+
+**Europe (11 servers):**
+- Hetzner: Nuremberg, Falkenstein, Helsinki
+- Vultr: Amsterdam, Frankfurt, Paris, London, Warsaw, Madrid, Stockholm
+- Linode: London, Frankfurt
+
+**Asia (4 servers):**
+- Hetzner: Singapore
+- Vultr: Singapore, Bangalore
+- Linode: Singapore
+
+**Oceania (2 servers):**
+- Vultr: Sydney
+- Linode: Sydney
+
+### Interactive Browse Modes
+
+When running `speedo -i`, you can browse servers by:
+- **🌍 All servers** - View complete list
+- **🗺️ Region** - Browse by continent/region
+- **🏢 Provider** - Browse by hosting company
+- **🔍 Search** - Filter by location, name, provider
+
+### Server Updates
+
+The server list is automatically updated from GitHub and cached locally for 7 days. Force an update with:
+```bash
+speedo --update-servers
+```
 
 ## BUILDING
 
@@ -173,6 +277,8 @@ cargo build --release
 
 - speedo.toml - configuration file
 - ~/.speedo.toml - user configuration file
+- ~/.local/share/speedo/servers.json - cached server list (Linux)
+- ~/Library/Application Support/speedo/servers.json - cached server list (macOS)
 
 ## SEE ALSO
 
