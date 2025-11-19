@@ -227,7 +227,7 @@ You can configure the speed display format in speedo.toml:
 
 ## SERVERS
 
-speedo includes 50 pre-configured speed test servers across all major regions, automatically updated from GitHub:
+speedo includes 52 pre-configured speed test servers across all major regions worldwide, automatically updated from GitHub:
 
 **Global/CDN:**
 - Cloudflare (Global CDN) - default
@@ -254,6 +254,12 @@ speedo includes 50 pre-configured speed test servers across all major regions, a
 
 **South America (1 server):**
 - DataPacket: São Paulo, Brazil
+
+**Middle East (1 server):**
+- DataPacket: Tel Aviv, Israel
+
+**Africa (1 server):**
+- DataPacket: Johannesburg, South Africa
 
 **Oceania (3 servers):**
 - Vultr: Sydney

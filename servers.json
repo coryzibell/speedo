@@ -1,6 +1,6 @@
 {
-  "version": "2.4.0",
-  "updated": "2025-11-19T06:08:00Z",
+  "version": "2.5.0",
+  "updated": "2025-11-19T06:10:00Z",
   "servers": [
     {
       "name": "Cloudflare CDN",
@@ -543,6 +543,28 @@
       "region": "Europe",
       "lat": 42.6977,
       "lon": 23.3219,
+      "file_size": 100000000,
+      "enabled": true
+    },
+    {
+      "name": "DataPacket Tel Aviv",
+      "url": "https://tlv.download.datapacket.com/100mb.bin",
+      "provider": "DataPacket",
+      "location": "Tel Aviv, Israel",
+      "region": "Middle East",
+      "lat": 32.0853,
+      "lon": 34.7818,
+      "file_size": 100000000,
+      "enabled": true
+    },
+    {
+      "name": "DataPacket Johannesburg",
+      "url": "https://jnb.download.datapacket.com/100mb.bin",
+      "provider": "DataPacket",
+      "location": "Johannesburg, South Africa",
+      "region": "Africa",
+      "lat": -26.2041,
+      "lon": 28.0473,
       "file_size": 100000000,
       "enabled": true
     }
