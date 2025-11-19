@@ -25,6 +25,7 @@ pub enum ServerSelection {
 
 pub enum BrowseMode {
     All,
+    GlobalCdn,
     ByRegion,
     ByProvider,
     Search,
@@ -56,6 +57,7 @@ fn get_browse_mode() -> Result<BrowseMode, Box<dyn std::error::Error>> {
     
     let options = vec![
         "🌍  Browse all servers",
+        "🌐  Global CDN servers",
         "🗺️  Browse by region",
         "🏢  Browse by provider",
         "🔍  Search servers",
@@ -67,6 +69,7 @@ fn get_browse_mode() -> Result<BrowseMode, Box<dyn std::error::Error>> {
     
     match selection {
         "🌍  Browse all servers" => Ok(BrowseMode::All),
+        "🌐  Global CDN servers" => Ok(BrowseMode::GlobalCdn),
         "🗺️  Browse by region" => Ok(BrowseMode::ByRegion),
         "🏢  Browse by provider" => Ok(BrowseMode::ByProvider),
         "🔍  Search servers" => Ok(BrowseMode::Search),
@@ -200,6 +203,21 @@ fn browse_all(servers: &[ServerMetadata], health_data: &LocalServerData) -> Resu
     select_from_list(servers, health_data)
 }
 
+fn browse_global_cdn(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
+    let global_cdn_servers: Vec<ServerMetadata> = servers.iter()
+        .filter(|s| s.region.as_ref().map(|r| r == "Global").unwrap_or(false))
+        .cloned()
+        .collect();
+    
+    if global_cdn_servers.is_empty() {
+        println!("{}", "No Global CDN servers available.".yellow());
+        wait_for_continue()?;
+        return show_menu();
+    }
+    
+    select_from_list(&global_cdn_servers, health_data)
+}
+
 fn search_servers(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
     let search_term = Text::new("Search servers:")
         .with_placeholder("Enter location, provider, or server name...")
@@ -236,6 +254,7 @@ pub fn show_menu() -> Result<ServerSelection, Box<dyn std::error::Error>> {
     
     match mode {
         BrowseMode::All => browse_all(&servers, &server_data),
+        BrowseMode::GlobalCdn => browse_global_cdn(&servers, &server_data),
         BrowseMode::ByRegion => browse_by_region(&servers, &server_data),
         BrowseMode::ByProvider => browse_by_provider(&servers, &server_data),
         BrowseMode::Search => search_servers(&servers, &server_data),
