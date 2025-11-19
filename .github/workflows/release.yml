@@ -95,52 +95,41 @@ jobs:
         run: |
           cd target/${{ matrix.target }}/release
           tar -czf ${{ matrix.asset_name }}.tar.gz ${{ matrix.artifact_name }}
-          tar -czf speedo-${{ matrix.target }}.tar.gz ${{ matrix.artifact_name }}
           mv ${{ matrix.asset_name }}.tar.gz ../../..
-          mv speedo-${{ matrix.target }}.tar.gz ../../..
 
       - name: Package binary (Windows)
         if: contains(matrix.target, 'windows')
         shell: pwsh
         run: |
           Compress-Archive -Path target/${{ matrix.target }}/release/${{ matrix.artifact_name }} -DestinationPath ${{ matrix.asset_name }}.zip
-          Compress-Archive -Path target/${{ matrix.target }}/release/${{ matrix.artifact_name }} -DestinationPath speedo-${{ matrix.target }}.zip
 
       - name: Package binary (macOS)
         if: contains(matrix.target, 'apple')
         run: |
           cd target/${{ matrix.target }}/release
           tar -czf ${{ matrix.asset_name }}.tar.gz ${{ matrix.artifact_name }}
-          tar -czf speedo-${{ matrix.target }}.tar.gz ${{ matrix.artifact_name }}
           mv ${{ matrix.asset_name }}.tar.gz ../../..
-          mv speedo-${{ matrix.target }}.tar.gz ../../..
 
       - name: Upload packaged artifact (Linux/FreeBSD)
         if: contains(matrix.target, 'linux') || contains(matrix.target, 'freebsd')
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}-packaged
-          path: |
-            ${{ matrix.asset_name }}.tar.gz
-            speedo-${{ matrix.target }}.tar.gz
+          path: ${{ matrix.asset_name }}.tar.gz
 
       - name: Upload packaged artifact (Windows)
         if: contains(matrix.target, 'windows')
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}-packaged
-          path: |
-            ${{ matrix.asset_name }}.zip
-            speedo-${{ matrix.target }}.zip
+          path: ${{ matrix.asset_name }}.zip
 
       - name: Upload packaged artifact (macOS)
         if: contains(matrix.target, 'apple')
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}-packaged
-          path: |
-            ${{ matrix.asset_name }}.tar.gz
-            speedo-${{ matrix.target }}.tar.gz
+          path: ${{ matrix.asset_name }}.tar.gz
 
   release:
     name: Create Release
