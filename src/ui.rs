@@ -2,12 +2,22 @@
 // Handles server selection menu, download status messages, and formatted output.
 
 use colored::*;
-use inquire::{Select, Text, Confirm};
+use inquire::{Select, Text};
 use bytesize::ByteSize;
+use crate::servers::{ServerMetadata, LocalServerData};
+use std::collections::{HashMap, HashSet};
 
 pub enum ServerSelection {
-    Predefined(usize),
+    Server(ServerMetadata),
     Custom(String, Option<String>),
+    Quit,
+}
+
+pub enum BrowseMode {
+    All,
+    ByRegion,
+    ByProvider,
+    Search,
     Quit,
 }
 
@@ -30,73 +40,196 @@ pub fn wait_for_continue() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-pub fn show_menu() -> Result<ServerSelection, Box<dyn std::error::Error>> {
+fn get_browse_mode() -> Result<BrowseMode, Box<dyn std::error::Error>> {
     print!("\x1B[2J\x1B[1;1H");
     playbill::print_title("speedo", Some(env!("CARGO_PKG_VERSION")));
-
+    
     let options = vec![
-        "Cloudflare CDN - https://speed.cloudflare.com/__down?bytes=100000000",
-        "Tele2 Global - http://speedtest.tele2.net/100MB.zip",
-        "─────────────────────────────────────────────────────────────────────",
-        "Hetzner Nuremberg - https://nbg1-speed.hetzner.com/100MB.bin",
-        "Hetzner Falkenstein - https://fsn1-speed.hetzner.com/100MB.bin",
-        "Hetzner Helsinki - https://hel1-speed.hetzner.com/100MB.bin",
-        "Hetzner Ashburn - https://ash-speed.hetzner.com/100MB.bin",
-        "Hetzner Hillsboro - https://hil-speed.hetzner.com/100MB.bin",
-        "Hetzner Singapore - https://sin-speed.hetzner.com/100MB.bin",
-        "─────────────────────────────────────────────────────────────────────",
-        "Vultr New Jersey - https://nj-us-ping.vultr.com/vultr.com.100MB.bin",
-        "Vultr Silicon Valley - https://sjo-ca-us-ping.vultr.com/vultr.com.100MB.bin",
-        "Vultr Singapore - https://sgp-ping.vultr.com/vultr.com.100MB.bin",
-        "─────────────────────────────────────────────────────────────────────",
-        "Custom URL",
-        "Quit",
+        "🌍  Browse all servers",
+        "🗺️   Browse by region",
+        "🏢  Browse by provider",
+        "🔍  Search servers",
+        "📍  Quit",
     ];
+    
+    let selection = Select::new("How would you like to browse servers?", options)
+        .prompt()?;
+    
+    match selection {
+        "🌍  Browse all servers" => Ok(BrowseMode::All),
+        "🗺️   Browse by region" => Ok(BrowseMode::ByRegion),
+        "🏢  Browse by provider" => Ok(BrowseMode::ByProvider),
+        "🔍  Search servers" => Ok(BrowseMode::Search),
+        "📍  Quit" => Ok(BrowseMode::Quit),
+        _ => Ok(BrowseMode::All),
+    }
+}
 
-    let selection = Select::new("Select a file:", options)
+fn group_servers_by_region(servers: &[ServerMetadata]) -> HashMap<String, Vec<ServerMetadata>> {
+    let mut map: HashMap<String, Vec<ServerMetadata>> = HashMap::new();
+    
+    for server in servers {
+        let region = server.region.clone().unwrap_or_else(|| "Other".to_string());
+        map.entry(region).or_insert_with(Vec::new).push(server.clone());
+    }
+    
+    map
+}
+
+fn group_servers_by_provider(servers: &[ServerMetadata]) -> HashMap<String, Vec<ServerMetadata>> {
+    let mut map: HashMap<String, Vec<ServerMetadata>> = HashMap::new();
+    
+    for server in servers {
+        let provider = server.provider.clone().unwrap_or_else(|| "Other".to_string());
+        map.entry(provider).or_insert_with(Vec::new).push(server.clone());
+    }
+    
+    map
+}
+
+fn select_from_list(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
+    let mut display_names: Vec<String> = servers.iter().map(|s| {
+        let health = health_data.health.get(&s.url);
+        let speed_info = if let Some(h) = health {
+            if h.avg_speed_mbps > 0.0 {
+                format!(" ({:.1} MB/s avg)", h.avg_speed_mbps / 8.0)
+            } else {
+                String::new()
+            }
+        } else {
+            String::new()
+        };
+        
+        format!("{} - {}{}", 
+            s.name,
+            s.location.as_ref().unwrap_or(&"Unknown".to_string()),
+            speed_info
+        )
+    }).collect();
+    
+    display_names.push("← Back".to_string());
+    
+    let selection = Select::new("Select a server:", display_names)
         .with_page_size(20)
         .prompt()?;
+    
+    if selection == "← Back" {
+        return show_menu();
+    }
+    
+    // Find the server by matching the beginning of the display name
+    let idx = servers.iter().position(|s| {
+        selection.starts_with(&format!("{} - {}", s.name, s.location.as_ref().unwrap_or(&"Unknown".to_string())))
+    }).unwrap_or(0);
+    
+    Ok(ServerSelection::Server(servers[idx].clone()))
+}
 
-    match selection {
-        "Cloudflare CDN - https://speed.cloudflare.com/__down?bytes=100000000" => Ok(ServerSelection::Predefined(0)),
-        "Tele2 Global - http://speedtest.tele2.net/100MB.zip" => Ok(ServerSelection::Predefined(1)),
-        "Hetzner Nuremberg - https://nbg1-speed.hetzner.com/100MB.bin" => Ok(ServerSelection::Predefined(2)),
-        "Hetzner Falkenstein - https://fsn1-speed.hetzner.com/100MB.bin" => Ok(ServerSelection::Predefined(3)),
-        "Hetzner Helsinki - https://hel1-speed.hetzner.com/100MB.bin" => Ok(ServerSelection::Predefined(4)),
-        "Hetzner Ashburn - https://ash-speed.hetzner.com/100MB.bin" => Ok(ServerSelection::Predefined(5)),
-        "Hetzner Hillsboro - https://hil-speed.hetzner.com/100MB.bin" => Ok(ServerSelection::Predefined(6)),
-        "Hetzner Singapore - https://sin-speed.hetzner.com/100MB.bin" => Ok(ServerSelection::Predefined(7)),
-        "Vultr New Jersey - https://nj-us-ping.vultr.com/vultr.com.100MB.bin" => Ok(ServerSelection::Predefined(8)),
-        "Vultr Silicon Valley - https://sjo-ca-us-ping.vultr.com/vultr.com.100MB.bin" => Ok(ServerSelection::Predefined(9)),
-        "Vultr Singapore - https://sgp-ping.vultr.com/vultr.com.100MB.bin" => Ok(ServerSelection::Predefined(10)),
-        "Custom URL" => {
-            let url = Text::new("Enter URL:")
-                .with_help_message("URL to download from (http/https)")
-                .prompt()?;
+fn browse_by_region(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
+    let grouped = group_servers_by_region(servers);
+    
+    let mut regions: Vec<String> = grouped.keys()
+        .map(|r| {
+            let count = grouped.get(r).map(|v| v.len()).unwrap_or(0);
+            format!("{} ({} servers)", r, count)
+        })
+        .collect();
+    regions.sort();
+    regions.push("← Back".to_string());
+    
+    let selection = Select::new("Select a region:", regions)
+        .prompt()?;
+    
+    if selection == "← Back" {
+        return show_menu();
+    }
+    
+    let region = selection.split(" (").next().unwrap_or("").to_string();
+    let region_servers = grouped.get(&region).unwrap();
+    
+    select_from_list(region_servers, health_data)
+}
 
-            let mut url = url.trim().to_string();
-            if !url.starts_with("http") {
-                url = format!("http://{}", url);
-            }
-
-            let want_save = Confirm::new("Save file to current folder?")
-                .with_default(false)
-                .prompt()?;
-
-            let save_path = if want_save {
-                let suggested = crate::downloader::extract_filename(&url);
-                let filename = Text::new("Enter filename:")
-                    .with_default(&suggested)
-                    .prompt()?;
-                Some(filename)
+fn browse_by_provider(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
+    let grouped = group_servers_by_provider(servers);
+    
+    let mut providers: Vec<String> = grouped.keys()
+        .map(|p| {
+            let count = grouped.get(p).map(|v| v.len()).unwrap_or(0);
+            let regions: HashSet<String> = grouped.get(p).unwrap()
+                .iter()
+                .filter_map(|s| s.region.clone())
+                .collect();
+            
+            if regions.is_empty() {
+                format!("{} ({} servers)", p, count)
+            } else if regions.len() == 1 {
+                format!("{} ({} servers - {})", p, count, regions.iter().next().unwrap())
             } else {
-                None
-            };
+                format!("{} ({} servers - {} regions)", p, count, regions.len())
+            }
+        })
+        .collect();
+    providers.sort();
+    providers.push("← Back".to_string());
+    
+    let selection = Select::new("Select a provider:", providers)
+        .prompt()?;
+    
+    if selection == "← Back" {
+        return show_menu();
+    }
+    
+    let provider = selection.split(" (").next().unwrap_or("").to_string();
+    let provider_servers = grouped.get(&provider).unwrap();
+    
+    select_from_list(provider_servers, health_data)
+}
 
-            Ok(ServerSelection::Custom(url, save_path))
-        }
-        "Quit" => Ok(ServerSelection::Quit),
-        _ => Ok(ServerSelection::Predefined(0)),
+fn browse_all(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
+    select_from_list(servers, health_data)
+}
+
+fn search_servers(servers: &[ServerMetadata], health_data: &LocalServerData) -> Result<ServerSelection, Box<dyn std::error::Error>> {
+    let search_term = Text::new("Search servers:")
+        .with_placeholder("Enter location, provider, or server name...")
+        .prompt()?;
+    
+    let search_lower = search_term.to_lowercase();
+    let filtered: Vec<ServerMetadata> = servers.iter()
+        .filter(|s| {
+            s.name.to_lowercase().contains(&search_lower) ||
+            s.location.as_ref().map(|l| l.to_lowercase().contains(&search_lower)).unwrap_or(false) ||
+            s.provider.as_ref().map(|p| p.to_lowercase().contains(&search_lower)).unwrap_or(false) ||
+            s.region.as_ref().map(|r| r.to_lowercase().contains(&search_lower)).unwrap_or(false)
+        })
+        .cloned()
+        .collect();
+    
+    if filtered.is_empty() {
+        println!("{}", format!("No servers found matching '{}'", search_term).yellow());
+        wait_for_continue()?;
+        return show_menu();
+    }
+    
+    println!("{}", format!("Found {} servers matching '{}'", filtered.len(), search_term).green());
+    select_from_list(&filtered, health_data)
+}
+
+pub fn show_menu() -> Result<ServerSelection, Box<dyn std::error::Error>> {
+    // Load server data
+    let server_data = crate::servers::load_local_server_data();
+    let servers = crate::servers::get_merged_server_list(&server_data);
+    
+    // Get browse mode
+    let mode = get_browse_mode()?;
+    
+    match mode {
+        BrowseMode::All => browse_all(&servers, &server_data),
+        BrowseMode::ByRegion => browse_by_region(&servers, &server_data),
+        BrowseMode::ByProvider => browse_by_provider(&servers, &server_data),
+        BrowseMode::Search => search_servers(&servers, &server_data),
+        BrowseMode::Quit => Ok(ServerSelection::Quit),
     }
 }
 
@@ -112,7 +245,6 @@ pub fn print_results(
     let mbs = (bytes_downloaded as f64 / total_time) / 1_048_576.0;
     let mbps = (bytes_downloaded as f64 * 8.0 / total_time) / 1_000_000.0;
     
-    // Print transfer summary
     let size_str = ByteSize::b(bytes_downloaded).to_string_as(true);
     
     let time_str = if total_time >= 60.0 {
@@ -173,7 +305,6 @@ pub fn print_speed_only(
     let mbs = (bytes_downloaded as f64 / total_time) / 1_048_576.0;
     let mbps = (bytes_downloaded as f64 * 8.0 / total_time) / 1_000_000.0;
     
-    // Print transfer summary
     let size_str = ByteSize::b(bytes_downloaded).to_string_as(true);
     
     let time_str = if total_time >= 60.0 {

@@ -1,9 +1,9 @@
 {
-  "version": "1.0.0",
-  "updated": "2025-11-19T05:00:00Z",
+  "version": "2.0.0",
+  "updated": "2025-11-19T05:27:00Z",
   "servers": [
     {
-      "name": "Cloudflare (CDN)",
+      "name": "Cloudflare CDN",
       "url": "https://speed.cloudflare.com/__down?bytes=100000000",
       "provider": "Cloudflare",
       "location": "Global CDN",
@@ -12,7 +12,7 @@
       "enabled": true
     },
     {
-      "name": "Tele2 (Global)",
+      "name": "Tele2 Global",
       "url": "http://speedtest.tele2.net/100MB.zip",
       "provider": "Tele2",
       "location": "Global",
@@ -21,7 +21,7 @@
       "enabled": true
     },
     {
-      "name": "Hetzner (Nuremberg)",
+      "name": "Hetzner Nuremberg",
       "url": "https://nbg1-speed.hetzner.com/100MB.bin",
       "provider": "Hetzner",
       "location": "Nuremberg, Germany",
@@ -32,7 +32,7 @@
       "enabled": true
     },
     {
-      "name": "Hetzner (Falkenstein)",
+      "name": "Hetzner Falkenstein",
       "url": "https://fsn1-speed.hetzner.com/100MB.bin",
       "provider": "Hetzner",
       "location": "Falkenstein, Germany",
@@ -43,7 +43,7 @@
       "enabled": true
     },
     {
-      "name": "Hetzner (Helsinki)",
+      "name": "Hetzner Helsinki",
       "url": "https://hel1-speed.hetzner.com/100MB.bin",
       "provider": "Hetzner",
       "location": "Helsinki, Finland",
@@ -54,7 +54,7 @@
       "enabled": true
     },
     {
-      "name": "Hetzner (Ashburn VA)",
+      "name": "Hetzner Ashburn",
       "url": "https://ash-speed.hetzner.com/100MB.bin",
       "provider": "Hetzner",
       "location": "Ashburn, Virginia, USA",
@@ -65,7 +65,7 @@
       "enabled": true
     },
     {
-      "name": "Hetzner (Hillsboro OR)",
+      "name": "Hetzner Hillsboro",
       "url": "https://hil-speed.hetzner.com/100MB.bin",
       "provider": "Hetzner",
       "location": "Hillsboro, Oregon, USA",
@@ -76,7 +76,7 @@
       "enabled": true
     },
     {
-      "name": "Hetzner (Singapore)",
+      "name": "Hetzner Singapore",
       "url": "https://sin-speed.hetzner.com/100MB.bin",
       "provider": "Hetzner",
       "location": "Singapore",
@@ -87,7 +87,7 @@
       "enabled": true
     },
     {
-      "name": "Vultr (New Jersey)",
+      "name": "Vultr New Jersey",
       "url": "https://nj-us-ping.vultr.com/vultr.com.100MB.bin",
       "provider": "Vultr",
       "location": "New Jersey, USA",
@@ -98,7 +98,51 @@
       "enabled": true
     },
     {
-      "name": "Vultr (Silicon Valley)",
+      "name": "Vultr Atlanta",
+      "url": "https://ga-us-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Atlanta, Georgia, USA",
+      "region": "North America",
+      "lat": 33.7490,
+      "lon": -84.3880,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Chicago",
+      "url": "https://il-us-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Chicago, Illinois, USA",
+      "region": "North America",
+      "lat": 41.8781,
+      "lon": -87.6298,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Dallas",
+      "url": "https://tx-us-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Dallas, Texas, USA",
+      "region": "North America",
+      "lat": 32.7767,
+      "lon": -96.7970,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Seattle",
+      "url": "https://wa-us-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Seattle, Washington, USA",
+      "region": "North America",
+      "lat": 47.6062,
+      "lon": -122.3321,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Silicon Valley",
       "url": "https://sjo-ca-us-ping.vultr.com/vultr.com.100MB.bin",
       "provider": "Vultr",
       "location": "Silicon Valley, California, USA",
@@ -109,13 +153,211 @@
       "enabled": true
     },
     {
-      "name": "Vultr (Singapore)",
+      "name": "Vultr Los Angeles",
+      "url": "https://lax-ca-us-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Los Angeles, California, USA",
+      "region": "North America",
+      "lat": 34.0522,
+      "lon": -118.2437,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Amsterdam",
+      "url": "https://ams-nl-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Amsterdam, Netherlands",
+      "region": "Europe",
+      "lat": 52.3676,
+      "lon": 4.9041,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Frankfurt",
+      "url": "https://fra-de-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Frankfurt, Germany",
+      "region": "Europe",
+      "lat": 50.1109,
+      "lon": 8.6821,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Paris",
+      "url": "https://par-fr-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Paris, France",
+      "region": "Europe",
+      "lat": 48.8566,
+      "lon": 2.3522,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr London",
+      "url": "https://lon-gb-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "London, United Kingdom",
+      "region": "Europe",
+      "lat": 51.5074,
+      "lon": -0.1278,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Warsaw",
+      "url": "https://waw-pl-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Warsaw, Poland",
+      "region": "Europe",
+      "lat": 52.2297,
+      "lon": 21.0122,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Madrid",
+      "url": "https://mad-es-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Madrid, Spain",
+      "region": "Europe",
+      "lat": 40.4168,
+      "lon": -3.7038,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Stockholm",
+      "url": "https://sto-se-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Stockholm, Sweden",
+      "region": "Europe",
+      "lat": 59.3293,
+      "lon": 18.0686,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Singapore",
       "url": "https://sgp-ping.vultr.com/vultr.com.100MB.bin",
       "provider": "Vultr",
       "location": "Singapore",
       "region": "Asia",
       "lat": 1.3521,
       "lon": 103.8198,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Bangalore",
+      "url": "https://blr-in-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Bangalore, India",
+      "region": "Asia",
+      "lat": 12.9716,
+      "lon": 77.5946,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Vultr Sydney",
+      "url": "https://syd-au-ping.vultr.com/vultr.com.100MB.bin",
+      "provider": "Vultr",
+      "location": "Sydney, Australia",
+      "region": "Oceania",
+      "lat": -33.8688,
+      "lon": 151.2093,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Linode Newark",
+      "url": "http://speedtest.newark.linode.com/100MB-newark.bin",
+      "provider": "Linode",
+      "location": "Newark, New Jersey, USA",
+      "region": "North America",
+      "lat": 40.7357,
+      "lon": -74.1724,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Linode Atlanta",
+      "url": "http://speedtest.atlanta.linode.com/100MB-atlanta.bin",
+      "provider": "Linode",
+      "location": "Atlanta, Georgia, USA",
+      "region": "North America",
+      "lat": 33.7490,
+      "lon": -84.3880,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Linode Dallas",
+      "url": "http://speedtest.dallas.linode.com/100MB-dallas.bin",
+      "provider": "Linode",
+      "location": "Dallas, Texas, USA",
+      "region": "North America",
+      "lat": 32.7767,
+      "lon": -96.7970,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Linode Fremont",
+      "url": "http://speedtest.fremont.linode.com/100MB-fremont.bin",
+      "provider": "Linode",
+      "location": "Fremont, California, USA",
+      "region": "North America",
+      "lat": 37.5483,
+      "lon": -121.9886,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Linode London",
+      "url": "http://speedtest.london.linode.com/100MB-london.bin",
+      "provider": "Linode",
+      "location": "London, United Kingdom",
+      "region": "Europe",
+      "lat": 51.5074,
+      "lon": -0.1278,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Linode Frankfurt",
+      "url": "http://speedtest.frankfurt.linode.com/100MB-frankfurt.bin",
+      "provider": "Linode",
+      "location": "Frankfurt, Germany",
+      "region": "Europe",
+      "lat": 50.1109,
+      "lon": 8.6821,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Linode Singapore",
+      "url": "http://speedtest.singapore.linode.com/100MB-singapore.bin",
+      "provider": "Linode",
+      "location": "Singapore",
+      "region": "Asia",
+      "lat": 1.3521,
+      "lon": 103.8198,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "Linode Sydney",
+      "url": "http://speedtest.sydney.linode.com/100MB-sydney.bin",
+      "provider": "Linode",
+      "location": "Sydney, Australia",
+      "region": "Oceania",
+      "lat": -33.8688,
+      "lon": 151.2093,
       "file_size": 104857600,
       "enabled": true
     }
