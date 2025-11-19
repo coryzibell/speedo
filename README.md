@@ -267,6 +267,15 @@ The server list is automatically updated from GitHub and cached locally for 7 da
 speedo --update-servers
 ```
 
+### Why AWS, GCP, Azure Aren't Included
+
+Major cloud platforms (AWS, Google Cloud, Microsoft Azure) don't provide public HTTP speed test files like infrastructure providers do:
+
+- **Infrastructure providers** (Hetzner, Vultr, Linode) offer dedicated speed test servers with standardized 100MB files at known URLs to help customers choose data centers
+- **Cloud platforms** (AWS, GCP, Azure) expect customers to deploy their own test infrastructure using their services
+
+The included providers represent all major hosting companies that offer **public, unauthenticated HTTP speed test downloads**. Cloud platforms would require API authentication or custom resource deployment, which is outside the scope of a simple speed test tool.
+
 ## BUILDING
 
 ```
