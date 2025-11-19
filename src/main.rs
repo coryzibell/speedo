@@ -11,7 +11,6 @@ use clap::Parser;
 use config::{load_config, SpeedUnit};
 use downloader::download_file;
 use output::OutputFormat;
-use servers::SERVERS;
 use ui::{show_menu, print_results, print_speed_only, print_download_header, wait_for_continue, ServerSelection};
 
 #[derive(Parser)]
@@ -139,18 +138,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn run_default_test(config: &crate::config::Config, speed_unit: SpeedUnit, output_format: OutputFormat) -> Result<(), Box<dyn std::error::Error>> {
-    let server = &SERVERS[0];
-    let result = download_file(server.url, None, &config.user_agent, speed_unit).await?;
+    // Load server data and get first server
+    let server_data = servers::load_local_server_data();
+    let server_list = servers::get_merged_server_list(&server_data);
+    
+    if server_list.is_empty() {
+        eprintln!("Error: No servers available");
+        return Ok(());
+    }
+    
+    let server = &server_list[0];
+    let result = download_file(&server.url, None, &config.user_agent, speed_unit).await?;
     
     match output_format {
         OutputFormat::Json => {
-            output::print_json(&result, server.name, server.url, false)?;
+            output::print_json(&result, &server.name, &server.url, false)?;
         }
         OutputFormat::JsonCompact => {
-            output::print_json(&result, server.name, server.url, true)?;
+            output::print_json(&result, &server.name, &server.url, true)?;
         }
         OutputFormat::Csv => {
-            output::print_csv(&result, server.name, server.url, true);
+            output::print_csv(&result, &server.name, &server.url, true);
         }
         OutputFormat::Human => {
             print_speed_only(
@@ -175,10 +183,10 @@ async fn run_interactive_mode(config: &crate::config::Config, speed_unit: SpeedU
         };
 
         let (url, name, save_path): (String, String, Option<String>) = match selection {
-            ServerSelection::Predefined(index) => {
+            ServerSelection::Server(server) => {
                 (
-                    SERVERS[index].url.to_string(),
-                    SERVERS[index].name.to_string(),
+                    server.url.clone(),
+                    server.name.clone(),
                     None,
                 )
             }
