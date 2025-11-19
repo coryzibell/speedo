@@ -12,6 +12,14 @@ user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
 # Set to false for non-interactive mode (just run default server test)
 interactive = false
 
+# Speed unit format for progress display
+# Options:
+#   "bits-metric" or "mbps"  - Megabits per second (Mbps, Gbps) - 1000-based
+#   "bits-binary" or "mibps" - Mebibits per second (Mibps, Gibps) - 1024-based
+#   "bytes-metric" or "mb/s" - Megabytes per second (MB/s, GB/s) - 1000-based (default)
+#   "bytes-binary" or "mib/s" - Mebibytes per second (MiB/s, GiB/s) - 1024-based
+speed_unit = "bytes-metric"
+
 # Custom test servers (optional)
 # Add your own speed test servers here
 [[custom_servers]]

@@ -7,7 +7,7 @@ mod servers;
 mod ui;
 
 use clap::Parser;
-use config::load_config;
+use config::{load_config, SpeedUnit};
 use downloader::download_file;
 use servers::SERVERS;
 use ui::{show_menu, print_results, print_speed_only, print_download_header, wait_for_continue, ServerSelection};
@@ -26,6 +26,10 @@ struct Args {
     /// Run in non-interactive mode (quick test)
     #[arg(short, long)]
     non_interactive: bool,
+    
+    /// Speed unit format: bits-metric, bits-binary, bytes-metric, bytes-binary
+    #[arg(short, long, value_name = "UNIT")]
+    speed_unit: Option<String>,
 }
 
 #[tokio::main]
@@ -33,10 +37,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let config = load_config();
     
+    // Determine speed unit: CLI flag overrides config
+    let speed_unit_str = args.speed_unit.as_ref().unwrap_or(&config.speed_unit);
+    let speed_unit = SpeedUnit::from_string(speed_unit_str);
+    
     // If URL is provided, download it and save to current directory
     if let Some(url) = args.url {
         let filename = downloader::extract_filename(&url);
-        let result = download_file(&url, Some(&filename), &config.user_agent).await?;
+        let result = download_file(&url, Some(&filename), &config.user_agent, speed_unit).await?;
         
         ui::print_speed_only(
             result.status_code,
@@ -62,18 +70,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     if interactive_mode {
         // Interactive mode - show menu and loop
-        run_interactive_mode(&config).await?;
+        run_interactive_mode(&config, speed_unit).await?;
     } else {
         // Non-interactive mode - run default server once
-        run_default_test(&config).await?;
+        run_default_test(&config, speed_unit).await?;
     }
 
     Ok(())
 }
 
-async fn run_default_test(config: &crate::config::Config) -> Result<(), Box<dyn std::error::Error>> {
+async fn run_default_test(config: &crate::config::Config, speed_unit: SpeedUnit) -> Result<(), Box<dyn std::error::Error>> {
     let server = &SERVERS[0];
-    let result = download_file(server.url, None, &config.user_agent).await?;
+    let result = download_file(server.url, None, &config.user_agent, speed_unit).await?;
     
     print_speed_only(
         result.status_code,
@@ -84,7 +92,7 @@ async fn run_default_test(config: &crate::config::Config) -> Result<(), Box<dyn 
     Ok(())
 }
 
-async fn run_interactive_mode(config: &crate::config::Config) -> Result<(), Box<dyn std::error::Error>> {
+async fn run_interactive_mode(config: &crate::config::Config, speed_unit: SpeedUnit) -> Result<(), Box<dyn std::error::Error>> {
     loop {
         let selection = match show_menu() {
             Ok(sel) => sel,
@@ -113,7 +121,7 @@ async fn run_interactive_mode(config: &crate::config::Config) -> Result<(), Box<
 
         print_download_header(&name, &save_path);
 
-        let result = download_file(&url, save_path.as_deref(), &config.user_agent).await?;
+        let result = download_file(&url, save_path.as_deref(), &config.user_agent, speed_unit).await?;
 
         print_results(
             result.status_code,

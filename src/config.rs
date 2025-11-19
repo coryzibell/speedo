@@ -12,6 +12,28 @@ pub struct Config {
     pub custom_servers: Vec<CustomServer>,
     #[serde(default)]
     pub interactive: bool,
+    #[serde(default = "default_speed_unit")]
+    pub speed_unit: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SpeedUnit {
+    BitsMetric,      // Mbps, Gbps (megabits, gigabits per second - 1000-based)
+    BitsBinary,      // Mibps, Gibps (mebibits, gibibits per second - 1024-based)
+    BytesMetric,     // MB/s, GB/s (megabytes, gigabytes per second - 1000-based)
+    BytesBinary,     // MiB/s, GiB/s (mebibytes, gibibytes per second - 1024-based)
+}
+
+impl SpeedUnit {
+    pub fn from_string(s: &str) -> Self {
+        match s.to_lowercase().as_str() {
+            "bits" | "bits-metric" | "mbps" | "gbps" => SpeedUnit::BitsMetric,
+            "bits-binary" | "mibps" | "gibps" => SpeedUnit::BitsBinary,
+            "bytes" | "bytes-metric" | "mb/s" | "gb/s" => SpeedUnit::BytesMetric,
+            "bytes-binary" | "mib/s" | "gib/s" => SpeedUnit::BytesBinary,
+            _ => SpeedUnit::BytesMetric, // Default to MB/s
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -24,12 +46,17 @@ fn default_user_agent() -> String {
     "Mozilla/5.0".to_string()
 }
 
+fn default_speed_unit() -> String {
+    "bytes-metric".to_string()
+}
+
 impl Default for Config {
     fn default() -> Self {
         Self {
             user_agent: default_user_agent(),
             custom_servers: Vec::new(),
             interactive: false,
+            speed_unit: default_speed_unit(),
         }
     }
 }

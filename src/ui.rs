@@ -3,6 +3,7 @@
 
 use colored::*;
 use inquire::{Select, Text, Confirm};
+use bytesize::ByteSize;
 
 pub enum ServerSelection {
     Predefined(usize),
@@ -110,6 +111,17 @@ pub fn print_results(
     let size_mb = bytes_downloaded as f64 / 1_048_576.0;
     let mbs = (bytes_downloaded as f64 / total_time) / 1_048_576.0;
     let mbps = (bytes_downloaded as f64 * 8.0 / total_time) / 1_000_000.0;
+    
+    // Print transfer summary
+    let size_str = ByteSize::b(bytes_downloaded).to_string_as(true);
+    
+    let time_str = if total_time >= 60.0 {
+        format!("{:.0}m {:.1}s", total_time / 60.0, total_time % 60.0)
+    } else {
+        format!("{:.2}s", total_time)
+    };
+    
+    println!("{} {} in {}", "Downloaded".green(), size_str, time_str);
 
     println!();
     if status_code == 200 {
@@ -160,6 +172,17 @@ pub fn print_speed_only(
 ) {
     let mbs = (bytes_downloaded as f64 / total_time) / 1_048_576.0;
     let mbps = (bytes_downloaded as f64 * 8.0 / total_time) / 1_000_000.0;
+    
+    // Print transfer summary
+    let size_str = ByteSize::b(bytes_downloaded).to_string_as(true);
+    
+    let time_str = if total_time >= 60.0 {
+        format!("{:.0}m {:.1}s", total_time / 60.0, total_time % 60.0)
+    } else {
+        format!("{:.2}s", total_time)
+    };
+    
+    print!("{} {} in {} - ", "Downloaded".green(), size_str, time_str);
 
     if status_code == 200 {
         println!("{:.2} MB/s  ({:.2} Mbps)", mbs, mbps);
