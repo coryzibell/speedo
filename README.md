@@ -227,21 +227,23 @@ You can configure the speed display format in speedo.toml:
 
 ## SERVERS
 
-speedo includes 34+ pre-configured speed test servers across all major regions, automatically updated from GitHub:
+speedo includes 37+ pre-configured speed test servers across all major regions, automatically updated from GitHub:
 
 **Global/CDN:**
 - Cloudflare (Global CDN) - default
 - Tele2 (Global)
 
-**North America (15 servers):**
+**North America (18 servers):**
 - Hetzner: Ashburn VA, Hillsboro OR
 - Vultr: New Jersey, Atlanta, Chicago, Dallas, Seattle, Silicon Valley, Los Angeles
 - Linode: Newark, Atlanta, Dallas, Fremont
+- OVH: Canada, USA
 
-**Europe (11 servers):**
+**Europe (12 servers):**
 - Hetzner: Nuremberg, Falkenstein, Helsinki
 - Vultr: Amsterdam, Frankfurt, Paris, London, Warsaw, Madrid, Stockholm
 - Linode: London, Frankfurt
+- OVH: Europe (Multi-region)
 
 **Asia (4 servers):**
 - Hetzner: Singapore

@@ -1,6 +1,6 @@
 {
-  "version": "2.0.0",
-  "updated": "2025-11-19T05:27:00Z",
+  "version": "2.1.0",
+  "updated": "2025-11-19T05:50:00Z",
   "servers": [
     {
       "name": "Cloudflare CDN",
@@ -358,6 +358,37 @@
       "region": "Oceania",
       "lat": -33.8688,
       "lon": 151.2093,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "OVH Europe",
+      "url": "https://proof.ovh.net/files/100Mb.dat",
+      "provider": "OVH",
+      "location": "Europe (Multi-region)",
+      "region": "Europe",
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "OVH Canada",
+      "url": "https://proof.ovh.ca/files/100Mb.dat",
+      "provider": "OVH",
+      "location": "Canada",
+      "region": "North America",
+      "lat": 45.5017,
+      "lon": -73.5673,
+      "file_size": 104857600,
+      "enabled": true
+    },
+    {
+      "name": "OVH USA",
+      "url": "https://proof.ovh.us/files/100Mb.dat",
+      "provider": "OVH",
+      "location": "United States",
+      "region": "North America",
+      "lat": 38.9072,
+      "lon": -77.0369,
       "file_size": 104857600,
       "enabled": true
     }
