@@ -134,3 +134,4 @@ GitHub.sublime-settings
 .env
 .env.local
 .env.*.local
+SESSION_CONTEXT.md
