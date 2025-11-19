@@ -24,14 +24,40 @@ pub enum ServerSelection {
 }
 
 pub enum ServerOption {
-    Server(ServerMetadata, String), // server and display string with health info
+    Server(ServerMetadata, Option<String>), // server and optional health info
     Back,
+}
+
+fn get_provider_color(provider: &Option<String>) -> Color {
+    match provider.as_deref() {
+        Some("Hetzner") => Color::BrightCyan,
+        Some("Vultr") => Color::BrightBlue,
+        Some("Linode") => Color::BrightGreen,
+        Some("DataPacket") => Color::BrightMagenta,
+        Some("OVH") => Color::BrightYellow,
+        Some("Cloudflare") => Color::BrightRed,
+        Some("Tele2") => Color::BrightWhite,
+        _ => Color::White,
+    }
 }
 
 impl std::fmt::Display for ServerOption {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ServerOption::Server(_, display) => write!(f, "{}", display),
+            ServerOption::Server(server, health_info) => {
+                let color = get_provider_color(&server.provider);
+                let base = format!("{} - {}", 
+                    server.name,
+                    server.location.as_ref().unwrap_or(&"Unknown".to_string())
+                );
+                let colored_base = base.color(color);
+                
+                if let Some(health) = health_info {
+                    write!(f, "{}{}", colored_base, health)
+                } else {
+                    write!(f, "{}", colored_base)
+                }
+            }
             ServerOption::Back => write!(f, "← Back"),
         }
     }
@@ -185,21 +211,15 @@ fn select_from_list(servers: &[ServerMetadata], health_data: &LocalServerData) -
         let health = health_data.health.get(&s.url);
         let speed_info = if let Some(h) = health {
             if h.avg_speed_mbps > 0.0 {
-                format!(" ({:.1} MB/s avg)", h.avg_speed_mbps / 8.0)
+                Some(format!(" ({:.1} MB/s avg)", h.avg_speed_mbps / 8.0))
             } else {
-                String::new()
+                None
             }
         } else {
-            String::new()
+            None
         };
         
-        let display = format!("{} - {}{}", 
-            s.name,
-            s.location.as_ref().unwrap_or(&"Unknown".to_string()),
-            speed_info
-        );
-        
-        ServerOption::Server(s.clone(), display)
+        ServerOption::Server(s.clone(), speed_info)
     }).collect();
     
     options.push(ServerOption::Back);
