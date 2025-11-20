@@ -34,3 +34,6 @@ clap = { version = "4.5", features = ["derive"] }
 playbill = "0.1.6"
 bytesize = "1.3"
 chrono = { version = "0.4", features = ["serde"] }
+
+[target.'cfg(windows)'.rustflags]
+rustflags = ["-Ctarget-feature=+crt-static"]
