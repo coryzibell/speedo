@@ -51,6 +51,7 @@ pub mod freya_ui {
     fn app() -> Element {
         let config = use_signal(|| crate::config::load_config());
         
+        // Load servers once on initialization
         let servers = use_signal(|| {
             let server_data = load_local_server_data();
             get_merged_server_list(&server_data)

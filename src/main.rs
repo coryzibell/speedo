@@ -54,20 +54,27 @@ struct Args {
     gui: bool,
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
+    
+    // Handle --gui flag BEFORE entering async runtime
+    // GUI needs to run on main thread without Tokio interference
+    if args.gui {
+        let config = load_config();
+        gui::freya_ui::launch_gui(config);
+        return Ok(());
+    }
+    
+    // For CLI operations, use Tokio runtime
+    tokio::runtime::Runtime::new()?.block_on(async_main(args))
+}
+
+async fn async_main(args: Args) -> Result<(), Box<dyn std::error::Error>> {
     let config = load_config();
     
     // Handle --update-servers command
     if args.update_servers {
         return update_server_list().await;
-    }
-    
-    // Handle --gui flag
-    if args.gui {
-        gui::freya_ui::launch_gui(config);
-        return Ok(());
     }
     
     // Auto-update server list if cache is stale
