@@ -3,6 +3,7 @@
 
 mod config;
 mod downloader;
+mod gui;
 mod output;
 mod servers;
 mod ui;
@@ -47,6 +48,10 @@ struct Args {
     /// Update remote server list
     #[arg(long)]
     update_servers: bool,
+    
+    /// Launch graphical user interface
+    #[arg(short = 'g', long)]
+    gui: bool,
 }
 
 #[tokio::main]
@@ -57,6 +62,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Handle --update-servers command
     if args.update_servers {
         return update_server_list().await;
+    }
+    
+    // Handle --gui flag
+    if args.gui {
+        gui::freya_ui::launch_gui(config);
+        return Ok(());
     }
     
     // Auto-update server list if cache is stale

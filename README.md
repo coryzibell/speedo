@@ -10,6 +10,14 @@ Network speed test tool and file downloader. Built in rust, doesn't need curl, w
 cargo install speedo
 ```
 
+### With GUI support
+
+```bash
+cargo install speedo --features gui
+```
+
+See [GUI.md](GUI.md) for system requirements and setup details.
+
 ### Using cargo-binstall
 
 ```bash
@@ -44,6 +52,9 @@ If a URL is provided as an argument, the file is downloaded to the current direc
 Command-line flags override the config file settings.
 
 ## OPTIONS
+
+**-g, --gui**
+    Launch graphical user interface (requires --features gui)
 
 **-i, --interactive**
     Show enhanced server selection menu with browse modes (by region, provider, search)
@@ -110,6 +121,11 @@ url = "https://example.com/testfile.bin"
 See speedo.toml.example for details.
 
 ## EXAMPLES
+
+Launch graphical interface:
+```
+speedo --gui
+```
 
 Run a quick speed test (default server):
 ```

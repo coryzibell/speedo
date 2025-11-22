@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Graphical user interface (GUI) using Dioxus framework
+- `--gui` / `-g` command-line flag to launch desktop GUI
+- Optional `gui` feature flag for building with GUI support
+- Modern dark-themed UI with CSS animations
+- Real-time speed test results in GUI
+- Visual server selection with hover effects
+- GUI.md documentation for building and using GUI
+- Cross-platform support (Linux, macOS, Windows)
+
 ## [0.3.0] - 2025-11-18
 
 ### Added

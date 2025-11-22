@@ -137,6 +137,22 @@ Maintain speedo's core principles:
 
 ## 🎨 UI/UX Improvements
 
+### Graphical User Interface (Dioxus)
+**Priority: High** | **Status: ✅ IMPLEMENTED (v0.4.0)**
+
+- ✅ Desktop GUI using Dioxus framework
+- ✅ Server selection with visual list
+- ✅ One-click speed testing
+- ✅ Real-time results display
+- ✅ Modern CSS styling with animations
+- ✅ Optional feature flag (--features gui)
+- ✅ Cross-platform (Linux, macOS, Windows)
+- 🔄 Future: Progress bars during download
+- 🔄 Future: Historical results charts
+- 🔄 Future: Settings panel
+
+See [GUI.md](GUI.md) for usage and build instructions.
+
 ### Better Interactive Mode
 **Priority: Medium** | **Target: v0.5.0**
 
