@@ -230,6 +230,7 @@ pub mod freya_ui {
                                     }
                                 }
                             }
+                        }
                     }
                 }
                 
