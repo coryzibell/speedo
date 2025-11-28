@@ -43,7 +43,7 @@ speedo --version
 
 ## DESCRIPTION
 
-speedo downloads a test file and reports the transfer speed. By default it runs non-interactively against Cloudflare's CDN. With the -i flag, it displays an enhanced interactive menu with 34+ speed test servers organized by region and provider.
+speedo downloads a test file and reports the transfer speed. By default it runs non-interactively against Cloudflare's CDN. With the -i flag, it displays an enhanced interactive menu with numerous test servers organized by region and provider.
 
 The tool supports multiple output formats (human-readable, JSON, CSV) for scripting and automation, and automatically updates its server list from GitHub.
 
